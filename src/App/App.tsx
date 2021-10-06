@@ -3,11 +3,12 @@ import logo from './logo.png';
 import './App.css';
 import debounce from 'lodash/debounce';
 
+import {CharacterList} from './CharacterList';
+
 
 function App() {
   const [data, updateData] = React.useState<any>(); 
   const [status, updateStatus] = React.useState<'idle' | 'loading' | 'success'>('idle');
-  const [showPersonInfo, togglePersonInfo] = React.useState('')
 
   const onSearchHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     updateStatus('loading');
@@ -31,23 +32,7 @@ function App() {
         {status === 'loading' &&
           <div data-testid="loading-indicator">Loading...</div>
         }
-        {status === 'success' && <ul>
-          {data?.results?.map((result: any) => {
-            return (
-              <li key={result.name} onMouseEnter={() => togglePersonInfo(result.name)} onMouseLeave={() => togglePersonInfo('')}>
-                {result.name}
-                {showPersonInfo === result.name && <div role="dialog">
-                  <ul>
-                    <li>Height: {result.height}</li>
-                    <li>Mass: {result.mass}</li>
-                    <li>Hair color: {result.hair_color}</li>
-                  </ul>
-                </div>}
-              </li>
-            )
-          })}
-        </ul>
-        }
+        {status === 'success' &&  <CharacterList characters={data?.results} />}
       </header>
     </div>
   );
