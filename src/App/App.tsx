@@ -7,6 +7,7 @@ import debounce from 'lodash/debounce';
 function App() {
   const [data, updateData] = React.useState<any>(); 
   const [status, updateStatus] = React.useState<'idle' | 'loading' | 'success'>('idle');
+  const [showPersonInfo, togglePersonInfo] = React.useState('')
 
   const onSearchHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     updateStatus('loading');
@@ -32,7 +33,18 @@ function App() {
         }
         {status === 'success' && <ul>
           {data?.results?.map((result: any) => {
-            return <li key={result.name}>{result.name}</li>
+            return (
+              <li key={result.name} onMouseEnter={() => togglePersonInfo(result.name)} onMouseLeave={() => togglePersonInfo('')}>
+                {result.name}
+                {showPersonInfo === result.name && <div role="dialog">
+                  <ul>
+                    <li>Height: {result.height}</li>
+                    <li>Mass: {result.mass}</li>
+                    <li>Hair color: {result.hair_color}</li>
+                  </ul>
+                </div>}
+              </li>
+            )
           })}
         </ul>
         }

@@ -59,4 +59,37 @@ describe('<App />', () => {
     expect(loader).not.toBeInTheDocument();
     expect(scope.isDone()).toBe(true);
   });
+
+  it('display detail information when a customer hovers over a name', async () => {
+    const response = {
+      "count": 1,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "name": "R2-D2",
+          "height": "96",
+          "mass": "32",
+          "hair_color": "n/a",
+        }
+      ]
+    }    
+    const scope = nock('https://swapi.dev')
+      .defaultReplyHeaders({
+        'access-control-allow-origin': '*',
+        'access-control-allow-credentials': 'true' 
+      })
+      .get('/api/people/')
+      .query({search: 'r2'})
+      .reply(200, response);
+    render(<App />);
+    const searchBox = screen.getByRole('textbox');
+    fireEvent.change(searchBox, {target: {value: 'r2'}});
+    const person = await screen.findByText('R2-D2');
+    fireEvent.mouseEnter(person)
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    fireEvent.mouseLeave(person)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(scope.isDone()).toBe(true);
+  });
 });
