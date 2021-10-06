@@ -1,6 +1,6 @@
 import React from 'react';
 
-function CharacterList(props) {
+function CharacterList(props: React.PropsWithoutRef<{characters: any[]}>) {
   const [showPersonInfo, togglePersonInfo] = React.useState('')
   return <ul>{props.characters?.map((result: any) => {
     return (
