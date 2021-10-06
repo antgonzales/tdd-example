@@ -2,6 +2,9 @@ import React from 'react';
 
 function CharacterList(props: React.PropsWithoutRef<{characters: any[]}>) {
   const [showPersonInfo, togglePersonInfo] = React.useState('')
+  if (!props.characters) {
+    return null;
+  }
   return <ul>{props.characters?.map((result: any) => {
     return (
       <li key={result.name} onMouseEnter={() => togglePersonInfo(result.name)} onMouseLeave={() => togglePersonInfo('')}>

@@ -1,4 +1,5 @@
 import React from 'react';
+import {useQuery} from 'react-query';
 import logo from './logo.png';
 import './App.css';
 import debounce from 'lodash/debounce';
@@ -7,19 +8,19 @@ import {CharacterList} from './CharacterList';
 
 
 function App() {
-  const [data, updateData] = React.useState<any>(); 
-  const [status, updateStatus] = React.useState<'idle' | 'loading' | 'success'>('idle');
+  const [searchInput, updateSearchInput] = React.useState(''); 
+
+  const {data: searchCharsRes, isLoading} = useQuery(['searchCharacters', searchInput], async () => {
+    if (searchInput === '') {
+      return;
+    }
+    const res = await fetch(`https://swapi.dev/api/people/?search=${searchInput}`);
+    const data = await res.json();
+    return data;
+  })
 
   const onSearchHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateStatus('loading');
-    try {
-      const res = await fetch(`https://swapi.dev/api/people/?search=${e.target.value}`);
-      const data = await res.json();
-      updateData(data);
-      updateStatus('success');
-    } catch (e) {
-      console.log(e);
-    }
+    updateSearchInput(e.target.value);
   };
 
   const debouncedOnSearchHandler = React.useCallback(debounce(onSearchHandler, 300), []);
@@ -29,10 +30,10 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <input type="text" onChange={debouncedOnSearchHandler} />
-        {status === 'loading' &&
+        {isLoading &&
           <div data-testid="loading-indicator">Loading...</div>
         }
-        {status === 'success' &&  <CharacterList characters={data?.results} />}
+        {!isLoading &&  <CharacterList characters={searchCharsRes?.results} />}
       </header>
     </div>
   );

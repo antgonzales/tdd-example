@@ -1,7 +1,13 @@
 import React from 'react';
+import {QueryClient, QueryClientProvider} from 'react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import nock from 'nock';
 import {App} from '.';
+
+const setupApp = () => {
+  const queryClient = new QueryClient()
+  return render(<QueryClientProvider client={queryClient}><App/></QueryClientProvider>);
+}
 
 describe('<App />', () => {
   it('searches for Star Wars people by name', async () => {
@@ -23,7 +29,7 @@ describe('<App />', () => {
       .get('/api/people/')
       .query({search: 'r2'})
       .reply(200, response);
-    render(<App />);
+    setupApp();
     const searchBox = screen.getByRole('textbox');
     fireEvent.change(searchBox, {target: {value: 'r2'}});
     const results = await waitFor(() => screen.getByText('R2-D2'));
@@ -50,10 +56,10 @@ describe('<App />', () => {
       .get('/api/people/')
       .query({search: 'r2'})
       .reply(200, response);
-    render(<App />);
+    setupApp();
     const searchBox = screen.getByRole('textbox');
     fireEvent.change(searchBox, {target: {value: 'r2'}});
-    const loader = await screen.findByTestId('loading-indicator');
+    const loader = screen.getByTestId('loading-indicator');
     expect(loader).toBeInTheDocument();
     await waitFor(() => screen.getByText('R2-D2'));
     expect(loader).not.toBeInTheDocument();
@@ -82,7 +88,7 @@ describe('<App />', () => {
       .get('/api/people/')
       .query({search: 'r2'})
       .reply(200, response);
-    render(<App />);
+    setupApp();
     const searchBox = screen.getByRole('textbox');
     fireEvent.change(searchBox, {target: {value: 'r2'}});
     const person = await screen.findByText('R2-D2');
