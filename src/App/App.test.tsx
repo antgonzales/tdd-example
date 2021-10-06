@@ -53,7 +53,7 @@ describe('<App />', () => {
     render(<App />);
     const searchBox = screen.getByRole('textbox');
     fireEvent.change(searchBox, {target: {value: 'r2'}});
-    const loader = screen.getByTestId('loading-indicator');
+    const loader = await screen.findByTestId('loading-indicator');
     expect(loader).toBeInTheDocument();
     await waitFor(() => screen.getByText('R2-D2'));
     expect(loader).not.toBeInTheDocument();
